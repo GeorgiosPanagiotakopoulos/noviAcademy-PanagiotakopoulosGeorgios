@@ -46,7 +46,7 @@ namespace WorldRank.Domain.Wallets
 			Balance += amount;
 		}
 
-		public void Withdraw(decimal amount)
+        public void Withdraw(decimal amount)
 		{
 			if (amount <= 0)
 				throw new InvalidAmountException(amount);
@@ -61,6 +61,13 @@ namespace WorldRank.Domain.Wallets
 			Balance = newBalance;
 		}
 
-		public override string ToString() => $"Balance -> {Balance} Currency -> {Currency} IsBlocked -> {IsBlocked}";
+        public void ForceWithdraw(decimal amount)
+        {
+            if (IsBlocked)
+                throw new WalletBlockedException(Currency);
+
+            Balance = Balance - amount;
+        }
+        public override string ToString() => $"Balance -> {Balance} Currency -> {Currency} IsBlocked -> {IsBlocked}";
 	}
 }

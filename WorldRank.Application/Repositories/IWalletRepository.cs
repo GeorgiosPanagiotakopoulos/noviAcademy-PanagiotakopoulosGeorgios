@@ -13,9 +13,11 @@ namespace WorldRank.Application.Repositories
 
 		void Deposit(int playerId, Currency currency, decimal amount);
 
-		void Withdraw(int playerId, Currency currency, decimal amount);
+        void Withdraw(int playerId, Currency currency, decimal amount);
 
-		void Block(int playerId, Currency currency);
+        void ForceWithdraw(int playerId, Currency currency, decimal amount);
+
+        void Block(int playerId, Currency currency);
 
 		void Unblock(int playerId, Currency currency);
 	}
