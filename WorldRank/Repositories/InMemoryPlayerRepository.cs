@@ -31,7 +31,7 @@
 
 		public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
 		{
-			throw new NotImplementedException();
-		}
+			return _players.GroupBy(item => item.Score);
+        }
 	}
 }

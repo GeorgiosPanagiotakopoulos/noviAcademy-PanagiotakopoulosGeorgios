@@ -15,7 +15,8 @@ while (true)
 	Console.WriteLine("3. Find player by name");
 	Console.WriteLine("4. Add Wallet to player");
 	Console.WriteLine("5. Get Player Wallets");
-	Console.WriteLine("0. Exit");
+    Console.WriteLine("6. Group Players By Score");
+    Console.WriteLine("0. Exit");
 	Console.Write("> ");
 
 	Action? action = Console.ReadLine() switch
@@ -23,10 +24,10 @@ while (true)
 		"1" => AddPlayer,
 		"2" => ListPlayers,
 		"3" => FindPlayer,
-		//New functionality
 		"4" => AddWalletToPlayer,
 		"5" => GetWalletOfPlayer,
-		"0" => null,
+        "6" => GroupPlayersByScore,
+        "0" => null,
 		_ => () => Console.WriteLine("Unknown option.")
 	};
 
@@ -121,6 +122,23 @@ void SearchPlayer()
 		walletRepository.Add(new Wallet(10, Currency.EUR, false), playerId);
 	}
 	Console.Write("Id not a number");
+}
+
+void GroupPlayersByScore()
+{
+    playerRepository
+        .GroupPlayersByScore()
+        .ToList()
+        .ForEach(group =>
+        {
+            Console.WriteLine($"Score: {group.Key}");
+
+            group.Select(player => player.Name)
+                 .ToList()
+                 .ForEach(Console.WriteLine);
+
+            Console.WriteLine();
+        });
 }
 
 #endregion Player Methods
