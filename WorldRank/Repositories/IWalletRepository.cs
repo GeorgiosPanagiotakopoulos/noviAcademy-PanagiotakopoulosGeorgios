@@ -1,9 +1,21 @@
-﻿namespace WorldRank.Console
+using WorldRank.Console.Enums;
+
+namespace WorldRank.Console
 {
 	public interface IWalletRepository
 	{
-		void Add(Wallet wallet, int playerId);
+		void Add(Wallet wallet);
 
-		List<Wallet> GetByPlayer(int playerId);
+		List<Wallet> GetAllWalletsByPlayerId(int playerId);
+
+		void UpdateBalance(int playerId, Currency currency, decimal newBalance);
+
+		void Deposit(int playerId, Currency currency, decimal amount);
+
+		void Withdraw(int playerId, Currency currency, decimal amount);
+
+		void Block(int playerId, Currency currency);
+
+		void Unblock(int playerId, Currency currency);
 	}
 }
