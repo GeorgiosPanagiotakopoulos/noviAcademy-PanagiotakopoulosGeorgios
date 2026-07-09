@@ -1,6 +1,6 @@
 ﻿using WorldRank.Domain.Player;
 
-namespace WorldRank.Console
+namespace WorldRank.Application.Repositories
 {
 	public interface IPlayerRepository
 	{
