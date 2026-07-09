@@ -1,32 +1,64 @@
-﻿using WorldRank.Console.Enums;
+using WorldRank.Console.Enums;
+using WorldRank.Console.Exceptions;
 
 namespace WorldRank.Console
 {
-	public class Wallet
+	public class Wallet : IWallet
 	{
+		public Currency Currency { get; }
+		public int PlayerId { get; }
 		public decimal Balance { get; private set; }
-		public Currency Currency;
-		public bool IsBlocked;
+		public bool IsBlocked { get; private set; }
 
-		public Wallet(decimal balance, Currency currency, bool isBlocked)
+		public Wallet(int playerId, Currency currency, decimal balance, bool isBlocked = false)
 		{
+			PlayerId = playerId;
+			if (balance < 0)
+				throw new InsufficientFundsException(balance);
+
 			Balance = balance;
 			Currency = currency;
-			IsBlocked = false;
+			IsBlocked = isBlocked;
 		}
+
+		public void Block() => IsBlocked = true;
+
+		public void Unblock() => IsBlocked = false;
 
 		public void SetBalance(decimal balance)
 		{
 			if (balance < 0)
-			{
-				return;
-			}
+				throw new InsufficientFundsException(balance);
+
 			Balance = balance;
 		}
 
-		public override string ToString()
+		public void Deposit(decimal amount)
 		{
-			return "Balance -> " + Balance + " Currency ->" + Currency + " IsBlocked -> " + IsBlocked;
+			if (amount <= 0)
+				throw new InvalidAmountException(amount);
+
+			if (IsBlocked)
+				throw new WalletBlockedException(Currency);
+
+			Balance += amount;
 		}
+
+		public void Withdraw(decimal amount)
+		{
+			if (amount <= 0)
+				throw new InvalidAmountException(amount);
+
+			if (IsBlocked)
+				throw new WalletBlockedException(Currency);
+
+			var newBalance = Balance - amount;
+			if (newBalance < 0)
+				throw new InsufficientFundsException(newBalance);
+
+			Balance = newBalance;
+		}
+
+		public override string ToString() => $"Balance -> {Balance} Currency -> {Currency} IsBlocked -> {IsBlocked}";
 	}
 }
