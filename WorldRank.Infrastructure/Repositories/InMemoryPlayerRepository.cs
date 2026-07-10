@@ -1,56 +1,55 @@
-using NLog;
-using WorldRank.Application.Repositories;
-using WorldRank.Domain.Player;
+using Microsoft.Extensions.Logging;
+using WorldRank.Application.Interfaces;
+using WorldRank.Domain.Entities;
 
-namespace WorldRank.Infrastructure.Repositories
+namespace WorldRank.Infrastructure.Repositories;
+
+public class InMemoryPlayerRepository : IPlayerRepository
 {
-	public class InMemoryPlayerRepository : IPlayerRepository
+	private readonly ILogger<InMemoryPlayerRepository> _logger;
+
+	private readonly List<Player> _players = new();
+
+	public InMemoryPlayerRepository(ILogger<InMemoryPlayerRepository> logger)
 	{
-		private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+		_logger = logger;
+	}
 
-		private List<Player> _players;
+	public void AddPlayer(Player player)
+	{
+		_players.Add(player);
+		_logger.LogInformation("Player {PlayerId} ({Name}) added with score {Score}", player.Id, player.Name, player.Score);
+	}
 
-		public InMemoryPlayerRepository()
+	public IEnumerable<Player> GetAllPlayers()
+	{
+		// Return a copy so callers cannot mutate the repository's internal list.
+		return _players.ToList();
+	}
+
+	public void DeletePlayer(int playerId)
+	{
+		var player = _players.FirstOrDefault(item => item.Id == playerId);
+
+		if (player is null)
 		{
-			_players = new List<Player>();
+			_logger.LogWarning("Delete skipped: player {PlayerId} not found", playerId);
+			return;
 		}
 
-		public void AddPlayer(Player player)
-		{
-			_players.Add(player);
-			_logger.Info("Player {PlayerId} ({Name}) added with score {Score}", player.Id, player.Name, player.Score);
-		}
+		_players.Remove(player);
+		_logger.LogInformation("Player {PlayerId} deleted", playerId);
+	}
 
-		public IEnumerable<Player> GetAllPlayers()
-		{
-			// Return a copy so callers cannot mutate the repository's internal list.
-			return _players.ToList();
-		}
+	public Player? FindPlayer(int playerId)
+	{
+		return _players.FirstOrDefault(item => item.Id == playerId);
+	}
 
-		public void DeletePlayer(int playerId)
-		{
-			var player = _players.Where(item => item.Id == playerId).FirstOrDefault();
-
-			if (player is null)
-			{
-				_logger.Warn("Delete skipped: player {PlayerId} not found", playerId);
-				return;
-			}
-
-			_players.Remove(player);
-			_logger.Info("Player {PlayerId} deleted", playerId);
-		}
-
-		public Player? FindPlayer(int playerId)
-		{
-			return _players.Where(item => item.Id == playerId).FirstOrDefault();
-		}
-
-		public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
-		{
-			return _players
-				.GroupBy(player => player.Score)
-				.OrderByDescending(group => group.Key);
-		}
+	public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
+	{
+		return _players
+			.GroupBy(player => player.Score)
+			.OrderByDescending(group => group.Key);
 	}
 }

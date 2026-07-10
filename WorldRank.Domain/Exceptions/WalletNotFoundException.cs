@@ -1,17 +1,16 @@
 using WorldRank.Domain.Enums;
 
-namespace WorldRank.Domain.Exceptions
-{
-	public class WalletNotFoundException : WalletException
-	{
-		public int PlayerId { get; }
-		public Currency Currency { get; }
+namespace WorldRank.Domain.Exceptions;
 
-		public WalletNotFoundException(int playerId, Currency currency)
+public class WalletNotFoundException : WalletException
+{
+	public int PlayerId { get; }
+	public Currency Currency { get; }
+
+	public WalletNotFoundException(int playerId, Currency currency)
 			: base($"Player {playerId} does not have a wallet in {currency}.")
-		{
-			PlayerId = playerId;
-			Currency = currency;
-		}
+	{
+		PlayerId = playerId;
+		Currency = currency;
 	}
 }
