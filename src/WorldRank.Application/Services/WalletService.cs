@@ -198,15 +198,12 @@ public class WalletService
 		// Pick the strategy that matches the chosen operation (resolved from DI, no factory).
 		var strategy = _fundsStrategies[operation.Value];
 
-		RunWalletOperation(() =>
-		{
-			var wallet = _walletRepository.GetWallet(playerId.Value, currency.Value);
-			strategy.Execute(wallet, amount.Value);
-			_logger.LogInformation("Applied {Strategy} of {Amount} to player {PlayerId} {Currency} wallet (balance {Balance})",
-				strategy.GetType().Name, amount, playerId, currency, wallet.Balance);
-			Console.WriteLine($"{operation} operation applied.");
-		});
-	}
+        RunWalletOperation(() =>
+        {
+            _walletRepository.ApplyStrategy(playerId.Value, currency.Value, strategy, amount.Value);
+            Console.WriteLine($"{operation} operation applied.");
+        });
+    }
 
 	// Runs a wallet operation and turns any domain (WalletException) failure into a friendly message + log.
 	private void RunWalletOperation(Action operation)

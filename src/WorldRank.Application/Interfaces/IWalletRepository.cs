@@ -1,3 +1,4 @@
+using WorldRank.Application.Strategies;
 using WorldRank.Domain.Entities;
 using WorldRank.Domain.Enums;
 
@@ -21,4 +22,6 @@ public interface IWalletRepository
 	void Block(int playerId, Currency currency);
 
 	void Unblock(int playerId, Currency currency);
+
+    void ApplyStrategy(int playerId, Currency currency, IFundsStrategy strategy, decimal amount);
 }

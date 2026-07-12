@@ -3,6 +3,7 @@ using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entities;
 using WorldRank.Domain.Enums;
 using WorldRank.Domain.Exceptions;
+using WorldRank.Application.Strategies;
 
 namespace WorldRank.Infrastructure.Repositories;
 
@@ -83,4 +84,12 @@ public class InMemoryWalletRepository : IWalletRepository
 
 		return wallet;
 	}
+
+    public void ApplyStrategy(int playerId, Currency currency, IFundsStrategy strategy, decimal amount)
+    {
+        var wallet = GetWallet(playerId, currency);   // ζωντανή αναφορά στη λίστα
+        strategy.Execute(wallet, amount);             // η μετάλλαξη «σώζεται» μόνη της
+        _logger.LogInformation("Applied {Strategy} of {Amount} to player {PlayerId} {Currency} wallet (balance {Balance})",
+            strategy.GetType().Name, amount, playerId, currency, wallet.Balance);
+    }
 }

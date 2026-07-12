@@ -5,6 +5,7 @@ using WorldRank.Domain.Entities;
 using WorldRank.Domain.Enums;
 using WorldRank.Domain.Exceptions;
 using WorldRank.Infrastructure.Persistence;
+using WorldRank.Application.Strategies;
 
 namespace WorldRank.Infrastructure.Repositories;
 
@@ -111,5 +112,17 @@ public class DBWalletRepository : IWalletRepository
         if (wallet is null)
             throw new WalletNotFoundException(playerId, currency);
         return wallet;
+    }
+
+    public void ApplyStrategy(int playerId, Currency currency, IFundsStrategy strategy, decimal amount)
+    {
+        using var db = _contextFactory.CreateDbContext();
+        var wallet = GetTracked(db, playerId, currency);
+
+        strategy.Execute(wallet, amount);
+        db.SaveChanges();
+
+        _logger.LogInformation("Applied {Strategy} of {Amount} to player {PlayerId} {Currency} wallet (balance {Balance})",
+            strategy.GetType().Name, amount, playerId, currency, wallet.Balance);
     }
 }
