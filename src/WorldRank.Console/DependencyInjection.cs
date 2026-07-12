@@ -21,8 +21,8 @@ public static class DependencyInjection
 		});
 
 		services.AddApplication();
-		services.AddInfrastructure();
+        services.AddInfrastructure(useDatabase: true);
 
-		return services;
+        return services;
 	}
 }
