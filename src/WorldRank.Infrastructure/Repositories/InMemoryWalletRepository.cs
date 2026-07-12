@@ -30,6 +30,11 @@ public class InMemoryWalletRepository : IWalletRepository
 		_logger.LogInformation("Wallet created for player {PlayerId} in {Currency} with balance {Balance}", wallet.PlayerId, wallet.Currency, wallet.Balance);
 	}
 
+	public Wallet[] GetAll()
+	{
+		return _wallets.ToArray();
+	}
+
 	public List<Wallet> GetAllWalletsByPlayerId(int playerId)
 	{
 		return _wallets.Where(item => item.PlayerId == playerId).ToList();

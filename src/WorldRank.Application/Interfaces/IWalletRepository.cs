@@ -7,6 +7,7 @@ public interface IWalletRepository
 {
 	void Add(Wallet wallet);
 
+	Wallet[] GetAll();
 	List<Wallet> GetAllWalletsByPlayerId(int playerId);
 
 	Wallet GetWallet(int playerId, Currency currency);
