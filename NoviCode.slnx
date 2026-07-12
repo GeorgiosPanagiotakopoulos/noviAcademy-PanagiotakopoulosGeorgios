@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/WorldRank/">
+    <Project Path="src/WorldRank.Domain/WorldRank.Domain.csproj" />
+    <Project Path="src/WorldRank.Application/WorldRank.Application.csproj" />
+    <Project Path="src/WorldRank.Infrastructure/WorldRank.Infrastructure.csproj" />
+    <Project Path="src/WorldRank.Console/WorldRank.Console.csproj" />
+  </Folder>
+</Solution>
