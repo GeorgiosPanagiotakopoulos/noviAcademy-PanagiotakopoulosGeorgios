@@ -5,12 +5,24 @@ using WorldRank.Domain.Exceptions;
 using WorldRank.Domain.Player;
 using WorldRank.Domain.Wallets;
 using WorldRank.Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using WorldRank.Application;
+using WorldRank.Infrastructure;
+using WorldRank.Application.Strategies;
 
 var logger = LogManager.GetCurrentClassLogger();
 
-//Wallets are stored in their own repository and reference the player via PlayerId
-IWalletRepository walletRepository = new InMemoryWalletRepository();
-IPlayerRepository playerRepository = new InMemoryPlayerRepository();
+var services = new ServiceCollection();
+services.AddApplication();
+services.AddInfrastructure();
+
+using var provider = services.BuildServiceProvider();
+
+var walletRepository = provider.GetRequiredService<IWalletRepository>();
+var playerRepository = provider.GetRequiredService<IPlayerRepository>();
+
+var fundsStrategies = provider.GetRequiredService<IEnumerable<IFundsStrategy>>()
+    .ToDictionary(strategy => strategy.Operation);
 
 logger.Info("Application started.");
 
@@ -32,7 +44,8 @@ while (true)
 	Console.WriteLine("11. Block wallet");
 	Console.WriteLine("12. Unblock wallet");
 	Console.WriteLine("13. Update wallet balance");
-	Console.WriteLine("0. Exit");
+    Console.WriteLine("14. Apply funds operation (strategy)");
+    Console.WriteLine("0. Exit");
 	Console.Write("> ");
 
 	Action? action = Console.ReadLine() switch
@@ -50,7 +63,8 @@ while (true)
 		"11" => BlockWallet,
 		"12" => UnblockWallet,
 		"13" => UpdateWalletBalance,
-		"0" => null,
+        "14" => ApplyFundsStrategy,
+        "0" => null,
 		_ => () => Console.WriteLine("Unknown option.")
 	};
 
@@ -383,6 +397,48 @@ void UpdateWalletBalance()
 		walletRepository.UpdateBalance(playerId.Value, currency.Value, newBalance.Value);
 		Console.WriteLine("Balance updated.");
 	});
+}
+
+FundsOperation? PromptFundsOperation()
+{
+    Console.Write("Give operation: 1 - Add | 2 - Subtract | 3 - ForceSubtract\n");
+    switch (Console.ReadLine())
+    {
+        case "1": return FundsOperation.Add;
+        case "2": return FundsOperation.Subtract;
+        case "3": return FundsOperation.ForceSubtract;
+        default:
+            Console.WriteLine("Unknown operation.");
+            return null;
+    }
+}
+void ApplyFundsStrategy()
+{
+    var playerId = PromptPlayerId();
+    if (playerId is null)
+        return;
+
+    var currency = PromptCurrency();
+    if (currency is null)
+        return;
+
+    var operation = PromptFundsOperation();
+    if (operation is null)
+        return;
+
+    var amount = PromptAmount("Amount");
+    if (amount is null)
+        return;
+
+    // Pick the strategy whose Operation matches the user's choice — no factory needed.
+    var strategy = fundsStrategies[operation.Value];
+
+    RunWalletOperation(() =>
+    {
+        var wallet = walletRepository.GetWallet(playerId.Value, currency.Value);
+        strategy.Execute(wallet, amount.Value);
+        Console.WriteLine($"{operation} operation applied. New balance: {wallet.Balance}");
+    });
 }
 
 #endregion Wallet Methods

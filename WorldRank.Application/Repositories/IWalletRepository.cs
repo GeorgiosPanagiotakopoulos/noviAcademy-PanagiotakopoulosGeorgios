@@ -8,8 +8,9 @@ namespace WorldRank.Application.Repositories
 		void Add(Wallet wallet);
 
 		List<Wallet> GetAllWalletsByPlayerId(int playerId);
+        Wallet GetWallet(int playerId, Currency currency);
 
-		void UpdateBalance(int playerId, Currency currency, decimal newBalance);
+        void UpdateBalance(int playerId, Currency currency, decimal newBalance);
 
 		void Deposit(int playerId, Currency currency, decimal amount);
 

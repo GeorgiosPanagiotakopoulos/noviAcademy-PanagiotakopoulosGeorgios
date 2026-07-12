@@ -10,8 +10,6 @@ namespace WorldRank.Domain.Wallets
 		public decimal Balance { get; private set; }
 		public bool IsBlocked { get; private set; }
 
-        Currency IWallet.Currency => throw new NotImplementedException();
-
         public Wallet(int playerId, Currency currency, decimal balance, bool isBlocked = false)
 		{
 			PlayerId = playerId;

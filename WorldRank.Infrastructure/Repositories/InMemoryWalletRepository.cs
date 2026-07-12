@@ -52,7 +52,7 @@ namespace WorldRank.Infrastructure.Repositories
         public void ForceWithdraw(int playerId, Currency currency, decimal amount)
         {
             var wallet = GetWallet(playerId, currency);
-            wallet.Withdraw(amount);
+            wallet.ForceWithdraw(amount);
             _logger.Info("Withdrew {Amount} from player {PlayerId} {Currency} wallet (balance {Balance})", amount, playerId, currency, wallet.Balance);
         }
 
@@ -68,7 +68,7 @@ namespace WorldRank.Infrastructure.Repositories
 			_logger.Info("Player {PlayerId} {Currency} wallet unblocked", playerId, currency);
 		}
 
-		private Wallet GetWallet(int playerId, Currency currency)
+        public Wallet GetWallet(int playerId, Currency currency)
 		{
 			var wallet = _wallets.SingleOrDefault(item => item.PlayerId == playerId && item.Currency == currency);
 
