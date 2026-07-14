@@ -22,11 +22,13 @@ public class DBPlayerRepository : IPlayerRepository
     public void AddPlayer(Player player)
     {
         using var db = _contextFactory.CreateDbContext();
-        var toAdd = new Player(0, player.Name, player.Score);
-        db.Players.Add(toAdd);
+
+        db.Players.Add(player);
+
         db.SaveChanges();
+
         _logger.LogInformation("Player {PlayerId} ({Name}) added with score {Score}",
-            toAdd.Id, toAdd.Name, toAdd.Score);
+            player.Id, player.Name, player.Score);
     }
 
     public IEnumerable<Player> GetAllPlayers()

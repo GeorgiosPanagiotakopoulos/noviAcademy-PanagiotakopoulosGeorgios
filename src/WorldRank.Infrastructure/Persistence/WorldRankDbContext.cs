@@ -24,6 +24,7 @@ public class WorldRankDbContext : DbContext
         {
             player.ToTable("Players");
             player.HasKey(p => p.Id);
+            player.Property(p => p.Id).ValueGeneratedNever();
             player.Property(p => p.Name).IsRequired().HasMaxLength(100);
         });
 
@@ -31,6 +32,7 @@ public class WorldRankDbContext : DbContext
         {
             wallet.ToTable("Wallets");
             wallet.HasKey(w => w.Id);
+            wallet.Property(w => w.Id).ValueGeneratedNever();
 
             // decimal ΧΩΡΙΣ precision βγάζει warning για πιθανό truncation — το ορίζουμε ρητά.
             wallet.Property(w => w.Balance).HasPrecision(18, 2);

@@ -29,11 +29,12 @@ public class DBWalletRepository : IWalletRepository
         if (exists)
             throw new DuplicateWalletException(wallet.PlayerId, wallet.Currency);
 
-        var toAdd = new Wallet(0, wallet.PlayerId, wallet.Currency, wallet.Balance, wallet.IsBlocked);
-        db.Wallets.Add(toAdd);
+        db.Wallets.Add(wallet);
+
         db.SaveChanges();
-        _logger.LogInformation("Wallet created for player {PlayerId} in {Currency} with balance {Balance}",
-            toAdd.PlayerId, toAdd.Currency, toAdd.Balance);
+
+        _logger.LogInformation("Wallet {WalletId} created for player {PlayerId} in {Currency} with balance {Balance}",
+            wallet.Id, wallet.PlayerId, wallet.Currency, wallet.Balance);
     }
 
     public Wallet[] GetAll()
