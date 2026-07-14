@@ -1,0 +1,48 @@
+@NoviCode.Api_HostAddress = http://localhost:5080
+
+### 1) Create a player (201 Created + Location header)
+POST {{NoviCode.Api_HostAddress}}/players
+Content-Type: application/json
+
+{
+  "name": "Alice",
+  "score": 100
+}
+
+### 2) List all players (200) — copy a player id from here for the wallet below.
+GET {{NoviCode.Api_HostAddress}}/players
+
+### 3) Get a player by id (200 or 404)
+GET {{NoviCode.Api_HostAddress}}/players/00000000-0000-0000-0000-000000000000
+
+### 4) Create a wallet for a player (201 Created + Location header)
+POST {{NoviCode.Api_HostAddress}}/wallets
+Content-Type: application/json
+
+{
+  "playerId": "00000000-0000-0000-0000-000000000000",
+  "currency": "EUR"
+}
+
+### 5) Get a wallet by id — replace with the id returned above.
+# First call = cache MISS (DB query), second call = cache HIT (no DB query — see the logs).
+GET {{NoviCode.Api_HostAddress}}/wallets/00000000-0000-0000-0000-000000000000
+
+### 6) Get a non-existent wallet (404)
+GET {{NoviCode.Api_HostAddress}}/wallets/99999999-9999-9999-9999-999999999999
+
+### 7) Deposit into a wallet (200) — invalidates the cached entry.
+POST {{NoviCode.Api_HostAddress}}/wallets/00000000-0000-0000-0000-000000000000/deposit
+Content-Type: application/json
+
+{
+  "amount": 50.00
+}
+
+### 8) Deposit a non-positive amount (400)
+POST {{NoviCode.Api_HostAddress}}/wallets/00000000-0000-0000-0000-000000000000/deposit
+Content-Type: application/json
+
+{
+  "amount": -5
+}

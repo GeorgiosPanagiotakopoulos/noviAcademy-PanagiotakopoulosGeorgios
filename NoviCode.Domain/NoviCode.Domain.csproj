@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>NoviCode</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Dependency rule: the Domain has zero NuGet package references. -->
+
+</Project>
